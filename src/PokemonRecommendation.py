@@ -5,6 +5,7 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
 
 class PokemonRecommendation:
+    compare_to = 0
 
     def __init__(self, compare_to: int, similar: int = 5):
         current_path = Path(__file__).resolve().parent.parent
@@ -25,12 +26,14 @@ class PokemonRecommendation:
         self.k_neighbors = similar
         self.knn_model = NearestNeighbors(n_neighbors=self.k_neighbors, metric='euclidean')
         self.knn_model.fit(pokemon_features)
-
+        self.compare_to = int(compare_to)
         self.distances, self.indices = self.knn_model.kneighbors(
             pokemon_features.iloc[int(compare_to)].values.reshape(1, -1))
 
     def run(self):
-        pokemon = []
+        pokemon = [self.compare_to]
+
         for i in range(1, self.k_neighbors):
-            pokemon.append(str(self.pokemon_df.loc[self.indices[0][i], 'pokedex_number']))
+            pokemon.append(int(self.pokemon_df.loc[self.indices[0][i], 'pokedex_number']))
+
         return pokemon
